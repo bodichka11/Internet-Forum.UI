@@ -1,0 +1,172 @@
+<app-navbar></app-navbar>
+<div class="search-container">
+  <input type="text" [(ngModel)]="searchTerm" placeholder="Search by title..." (input)="searchPosts()"/>
+  <button (click)="resetSearch()" *ngIf="isSearching">Reset</button>
+</div>
+<div class="posts-container">
+  <h2>Останні пости</h2>
+  <ng-container *ngIf="errorMessage; else postsContent">
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+  </ng-container>
+  <ng-template #postsContent>
+    <ng-container *ngIf="posts && posts.length === 0; else postsList">
+      <p>Наразі немає постів.</p>
+    </ng-container>
+  </ng-template>
+  <div class="create-post-container">
+    <h2>Створити пост</h2>
+    <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+      <div class="post-field">
+        <label for="title">title:</label>
+        <textarea id="title" formControlName="title"></textarea>
+        <div *ngIf="postForm.get('title')?.invalid && postForm.get('title')?.touched">
+          title є обов'язковим.
+        </div>
+      </div>
+      <div class="post-field">
+        <label for="topicName">Topic:</label>
+        <select id="topicName" formControlName="topicName">
+          <option value="">Select a topic</option>
+          <option *ngFor="let topic of topics" [value]="topic.name">{{ topic.name }}</option>
+        </select>
+        <div *ngIf="postForm.get('topicName')?.invalid && postForm.get('topicName')?.touched">
+          Topic is required.
+        </div>
+      </div>
+      <div class="post-field">
+        <label for="content">Контент:</label>
+        <textarea id="content" formControlName="content"></textarea>
+        <div *ngIf="postForm.get('content')?.invalid && postForm.get('content')?.touched">
+          Контент є обов'язковим.
+        </div>
+      </div>
+      <div class="post-field">
+        <label for="images">Images:</label>
+        <input type="file" id="images" (change)="onFileSelected($event)" multiple>
+      </div>
+      <div class="tags-section" formArrayName="tags">
+        <label for="tags">Tags:</label>
+        <div *ngFor="let tag of tags.controls; let i = index;" [formGroupName]="i" class="tag-input-group">
+          <input formControlName="name" placeholder="Введіть тег" />
+          <button type="button" class="remove-tag-button" (click)="removeTag(i)">Видалити</button>
+        </div>
+        <button type="button" class="add-tag-button" (click)="addTag()">Додати тег</button>
+        <div class="tags-list">
+          <span *ngFor="let tag of tags.controls; let i = index;" class="tag-item">
+            {{ tag.value.name }}
+            <button type="button" (click)="removeTag(i)">×</button>
+          </span>
+        </div>
+      </div>
+      <button type="submit" [disabled]="postForm.invalid" class="submit-button">Створити пост</button>
+    </form>
+  </div>
+  <ng-template #postsList>
+    <div *ngFor="let post of posts;" class="post-card">
+      <ng-container *ngIf="editingPostId !== post.id; else editingPost">
+        <h3>{{ post.title }}</h3>
+        <div class="post-meta">
+          <span>Опубліковано: {{ post.createdAt | date:'medium' }}</span> |
+          <ng-container *ngIf="post.author">
+            <span>Автор ID: {{ post.userId }}</span>
+            <span>Ім'я: {{post.author.username}}</span>
+            <span>Мейл: {{post.author.emailAddress}}</span>
+            <p>Topic: {{ getTopicName(post.topicId) }}</p>
+          </ng-container>
+        </div>
+        <div *ngIf="post.images?.length" class="post-images">
+          <ng-container *ngFor="let image of post.images;">
+            <img [src]="getImageUrl(image)" (error)="onImageError($event)" alt="Post Image" class="post-image" />
+          </ng-container>
+        </div>
+        <p class="post-content">{{ post.content }}</p>
+        <div *ngIf="post.tags?.length" class="post-tags">
+          <span *ngFor="let tag of post.tags;" class="post-tag">
+            #{{ tag.name }}
+          </span>
+        </div>
+        <ng-container *ngIf="post.userId === currentUserId">
+          <button type="button" (click)="startEditingPost(post)" class="button-edit">Edit</button>
+          <button type="button" (click)="deletePost(post)" class="button-delete">Delete</button>
+        </ng-container>
+      </ng-container>
+      <ng-template #editingPost>
+        <input [(ngModel)]="editingPostTitle" placeholder="Post title" class="form-control">
+        <textarea [(ngModel)]="editingPostContent" placeholder="Post content" class="form-control"></textarea>
+        <select [(ngModel)]="selectedTopicName" class="form-control">
+          <option value="">Select a topic</option>
+          <option *ngFor="let topic of topics" [value]="topic.name">{{ topic.name }}</option>
+        </select>
+        <div class="editing-tags">
+          <div *ngFor="let tag of editingPostTags; let i = index">
+            <input [(ngModel)]="tag.name" placeholder="Tag name" class="form-control">
+            <button type="button" (click)="removeTagFromEditingPost(i)" class="remove-tag-button">Remove Tag</button>
+          </div>
+          <button type="button" (click)="addTagToEditingPost()" class="add-tag-button">Add Tag</button>
+        </div>
+        <div class="post-field">
+          <label for="editImages">Images:</label>
+          <input type="file" id="editImages" (change)="onFileSelected($event)" multiple class="form-control">
+        </div>
+        <button (click)="updatePost(post)" class="submit-button">Save</button>
+        <button type="button" (click)="cancelEditingPost()" class="button-cancel">Cancel</button>
+      </ng-template>
+      <div class="post-reactions">
+        <span>Реакції</span>
+        <div *ngFor="let reaction of getUniqueReactions(post.reactions);" class="reaction">
+          <span>{{ getReactionEmoji(reaction.type) }}</span>
+          <span>{{ reactionTypeToString(reaction.type) }}: {{ reaction.count }}</span>
+        </div>
+        <button type="button" (click)="reactTo(post, ReactionType.Like)" class="reaction-button">👍 Like</button>
+        <button type="button" (click)="reactTo(post, ReactionType.Dislike)" class="reaction-button">👎 Dislike</button>
+        <button type="button" (click)="reactTo(post, ReactionType.Heart)" class="reaction-button">❤️ Heart</button>
+        <button type="button" (click)="reactTo(post, ReactionType.Angry)" class="reaction-button">😡 Angry</button>
+      </div>
+      <div class="post-comments">
+        <h4>Comments</h4>
+        <div *ngFor="let comment of post.comments;" class="comment">
+          <ng-container *ngIf="comment">
+            <ng-container *ngIf="editingCommentId !== comment.id; else editingComment">
+              <p><strong>User ID {{ comment.userId }}:</strong> {{ comment.content }}</p>
+              <span>Posted: {{ comment.createdAt | date:'short' }}</span>
+              <ng-container *ngIf="comment.userId === currentUserId">
+                <button (click)="startEditingComment(comment)" class="button-edit">Edit</button>
+                <button (click)="deleteComment(comment)" class="button-delete">Delete</button>
+              </ng-container>
+            </ng-container>
+            <ng-template #editingComment>
+              <textarea [(ngModel)]="editingCommentContent" class="form-control"></textarea>
+              <button type="button" (click)="updateComment(comment)" class="submit-button">Save</button>
+              <button type="button" (click)="cancelEditingComment()" class="button-cancel">Cancel</button>
+            </ng-template>
+            <div class="comment-reactions">
+              <span>Reactions</span>
+              <div *ngFor="let reaction of getUniqueReactions(comment.reactions);" class="reaction">
+                <span>{{ getReactionEmoji(reaction.type) }}</span>
+                <span>{{ reactionTypeToString(reaction.type) }}: {{ reaction.count }}</span>
+              </div>
+              <button type="button" (click)="reactTo(comment, ReactionType.Like, true)" class="reaction-button">👍 Like</button>
+              <button type="button" (click)="reactTo(comment, ReactionType.Dislike, true)" class="reaction-button">👎 Dislike</button>
+              <button type="button" (click)="reactTo(comment, ReactionType.Heart, true)" class="reaction-button">❤️ Heart</button>
+              <button type="button" (click)="reactTo(comment, ReactionType.Angry, true)" class="reaction-button">😡 Angry</button>
+            </div>
+          </ng-container>
+        </div>
+        <div class="add-comment">
+          <textarea [(ngModel)]="newCommentContent" placeholder="Add a comment..." class="form-control"></textarea>
+          <button type="button" (click)="addComment(post.id)" class="submit-button">Post Comment</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <div class="pagination-controls">
+    <button type="button" (click)="previousPage()" [disabled]="currentPage === 1" class="pagination-button">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">Next</button>
+  </div>
+  <div class="popular-posts-container">
+    <app-popular-posts></app-popular-posts>
+  </div>
+</div>

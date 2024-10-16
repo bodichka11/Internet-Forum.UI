@@ -1,0 +1,53 @@
+<app-navbar></app-navbar>
+<div class="profile-edit">
+  <h2>Edit Profile</h2>
+
+  <div class="avatar-container">
+    <img [src]="user?.imageUrl" alt="User Avatar" class="avatar-image">
+  </div>
+
+  <!-- Avatar upload form -->
+  <div class="avatar-upload">
+    <input type="file" (change)="onFileSelected($event)" accept="image/*">
+    <button class="button" (click)="uploadAvatar()">Upload Avatar</button>
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input id="username" formControlName="username" type="text" class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="emailAddress">Email Address</label>
+      <input id="emailAddress" formControlName="emailAddress" type="email" class="form-control" />
+    </div>
+
+    <button type="submit" class="button">Update</button>
+  </form>
+
+  <div class="posts-section">
+    <h2>Your Posts</h2>
+    <ng-container *ngIf="posts?.length; else noPosts">
+      <div *ngFor="let post of posts;" class="post-card">
+        <h3>{{ post.title }}</h3>
+        <div class="post-meta">
+          <span>Published: {{ post.createdAt | date:'medium' }}</span> |
+        </div>
+        <div *ngIf="post.images?.length" class="post-images">
+          <img *ngFor="let image of post.images;" [src]="image" alt="Post Image" class="post-image" />
+        </div>
+        <p class="post-content">{{ post.content }}</p>
+        <div *ngIf="post.tags?.length" class="post-tags">
+          <span *ngFor="let tag of post.tags;" class="post-tag">
+            #{{ tag.name }}
+          </span>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #noPosts>
+      <p>You have no posts yet.</p>
+    </ng-template>
+  </div>
+</div>

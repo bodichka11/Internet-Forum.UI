@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Internet-Forum</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/home">Home</a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center">
+        <div *ngIf="isUserAuthenticated()" class="authenticated d-flex align-items-center me-3">
+          <div class="avatar-container me-2">
+            <img [src]="user?.imageUrl" (error)="handleImageError($event)" alt="User Avatar" class="avatar-image">
+          </div>
+          <a [routerLink]="['/profile']" class="username-link">{{user?.username}}</a>
+        </div>
+        <button *ngIf="isUserAuthenticated()" (click)="logOut()" routerLink="/" type="button" class="btn btn-outline-danger">Log out</button>
+        <button *ngIf="!isUserAuthenticated()" routerLink="/login" type="button" class="btn btn-outline-dark">Log in</button>
+      </div>
+    </div>
+  </div>
+</nav>

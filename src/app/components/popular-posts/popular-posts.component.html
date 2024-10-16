@@ -1,0 +1,40 @@
+<div class="popular-posts-container">
+  <h2>Популярні Пости</h2>
+  <button (click)="loadPopularPosts()">Завантажити Популярні Пости</button>
+  <div *ngIf="popularPosts.length === 0">Наразі немає популярних постів.</div>
+  <div *ngFor="let post of popularPosts" class="post-card">
+    <h3>{{ post.title }}</h3>
+    <p class="post-meta">
+      <strong>Опубліковано:</strong> {{ post.createdAt | date:'medium' }}
+      <span>Автор ID: {{ post.userId }}</span>
+      <span>Ім'я: {{ post.author.username }}</span>
+      <span>Мейл: {{ post.author.emailAddress }}</span>
+    </p>
+    <p class="post-content">{{ post.content }}</p>
+    <div *ngIf="post.tags?.length" class="post-tags">
+      <span *ngFor="let tag of post.tags;" class="post-tag">
+        #{{ tag.name }}
+      </span>
+    </div>
+    <div class="post-reactions">
+      <span>Реакції</span>
+      <div *ngFor="let reaction of getUniqueReactions(post.reactions);" class="reaction">
+        <span>{{ getReactionEmoji(reaction.type) }}</span>
+        <span>{{ reactionTypeToString(reaction.type) }}: {{ reaction.count }}</span>
+      </div>
+    </div>
+    <h4>Comments</h4>
+    <div *ngIf="post.comments?.length === 0">Жодного коментаря</div>
+    <div *ngFor="let comment of post.comments;" class="comment">
+      <p><strong>User ID {{ comment.userId }}:</strong> {{ comment.content }}</p>
+      <span>Posted: {{ comment.createdAt | date:'short' }}</span>
+      <div class="comment-reactions">
+        <span>Reactions</span>
+        <div *ngFor="let reaction of getUniqueReactions(comment.reactions);" class="reaction">
+          <span>{{ getReactionEmoji(reaction.type) }}</span>
+          <span>{{ reactionTypeToString(reaction.type) }}: {{ reaction.count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

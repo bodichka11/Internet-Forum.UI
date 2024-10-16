@@ -1,0 +1,527 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.profile-edit {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 20px auto;
+  border: 3px solid #007bff;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-upload {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.avatar-upload input[type="file"] {
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.avatar-upload .button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.avatar-upload .button:hover {
+  background-color: #0056b3;
+}
+
+.profile-form .form-group {
+  margin-bottom: 20px;
+}
+
+.profile-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.profile-form .form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1em;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.profile-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.profile-form .button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.profile-form .button:hover {
+  background-color: #0056b3;
+}
+
+.posts-section {
+  margin-top: 40px;
+}
+
+.posts-section h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.post-form label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.post-form input,
+.post-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-size: 1em;
+}
+
+.post-form input:focus,
+.post-form textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.post-form button {
+  display: inline-block;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+  margin-right: 10px;
+  font-size: 1em;
+}
+
+.post-form button:last-child {
+  margin-right: 0;
+}
+
+.post-form button:hover {
+  background-color: #0056b3;
+}
+
+.post-form .formArrayName .button {
+  background-color: #dc3545;
+  border-radius: 4px;
+  padding: 5px 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.post-form .formArrayName .button:hover {
+  background-color: #c82333;
+}
+
+.post-form div {
+  margin-bottom: 15px;
+}
+
+.post-form div:last-child {
+  margin-bottom: 0;
+}
+
+.ng-invalid.ng-touched {
+  border-color: #e74c3c;
+}
+
+.ng-invalid.ng-touched + div {
+  color: #e74c3c;
+  font-size: 0.9em;
+}
+
+.post-card {
+  margin: 50px;
+  width: 300px;
+  background-color: #ffffff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
+}
+
+.post-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.post-card h3 {
+  margin-top: 0;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.post-meta {
+  color: #777;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+}
+
+.post-meta span {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.post-images {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.post-image {
+  max-width: 100px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  transition: transform 0.3s;
+}
+
+.post-image:hover {
+  transform: scale(1.1);
+}
+
+.post-content {
+  margin-top: 15px;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+.post-tags {
+  margin-top: 10px;
+}
+
+.post-tag {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  margin-right: 5px;
+  transition: background-color 0.3s;
+}
+
+.post-tag:hover {
+  background-color: #0056b3;
+}
+
+.post-reactions,
+.post-comments {
+  margin-top: 20px;
+}
+
+.reaction {
+  margin-right: 10px;
+}
+
+.post-comments .comment {
+  background-color: #f1f1f1;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.post-comments .comment p {
+  margin: 0;
+}
+
+.button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.create-post-container {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.create-post-container h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+
+.post-field {
+  margin-bottom: 20px;
+}
+
+.post-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.post-field input,
+.post-field textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1em;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.post-field input:focus,
+.post-field textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.post-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.post-field [formArrayName="tags"] {
+  margin-top: 15px;
+}
+
+.post-field [formArrayName="tags"] input {
+  width: calc(100% - 100px);
+  margin-right: 10px;
+}
+
+.post-field [formArrayName="tags"] button {
+  padding: 5px 10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.post-field [formArrayName="tags"] button:hover {
+  background-color: #c82333;
+}
+
+.post-field [formArrayName="tags"] + button {
+  margin-top: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.post-field [formArrayName="tags"] + button:hover {
+  background-color: #218838;
+}
+
+.create-post-container form button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-post-container form button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.create-post-container form button[type="submit"]:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.post-field div {
+  color: #dc3545;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+
+.tags-section {
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  background-color: #f9f9f9;
+}
+
+.tags-section label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+.tag-input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tag-input-group input {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.tag-input-group button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tag-input-group button:hover {
+  background-color: #c82333;
+}
+
+.add-tag-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 1em;
+}
+
+.add-tag-button:hover {
+  background-color: #218838;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.tag-item {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 5px 10px;
+  margin: 0 5px 5px 0;
+  border-radius: 20px;
+  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tag-item button {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  font-size: 1.2em;
+  margin-left: 5px;
+  padding: 0;
+  line-height: 1;
+}
+
+.tag-item button:hover {
+  color: #dc3545;
+}
+
+.Posts {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  height: 100%;
+}
+
+.posts-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.posts-container h2 {
+  color: #333;
+  font-weight: bold;
+  text-align: center;
+}
