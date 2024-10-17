@@ -6,6 +6,7 @@ import { ReactionType } from "src/app/enums/reaction-type";
 import { CommentCreateDto } from "src/app/models/dto`s/comment/comment-create-dto";
 import { CommentDto } from "src/app/models/dto`s/comment/comment-dto";
 import { PostCreateDto } from "src/app/models/dto`s/post/post-create-dto";
+import { CreatePostOnlyTitleRequestDto } from "src/app/models/dto`s/post/post-create-onlytitle.dto";
 import { PostUpdateDto } from "src/app/models/dto`s/post/post-update-dto";
 import { TagDto } from "src/app/models/dto`s/tag/tag-dto";
 import { Post } from "src/app/models/post";
@@ -24,6 +25,8 @@ import { UserService } from "src/app/services/user.service";
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
+  generatePostTitle: string = '';
+
   searchTerm: string = '';
   searchSubject: Subject<string> = new Subject<string>();
 
@@ -158,10 +161,10 @@ export class HomeComponent implements OnInit {
     return this.postForm.get("tags") as FormArray;
   }
 
-  addTag(): void {
+  addTag(name: string = ''): void {
     this.tags.push(
       this.fb.group({
-        name: ["", Validators.required],
+        name: [name, Validators.required],
       })
     );
   }
@@ -464,4 +467,38 @@ export class HomeComponent implements OnInit {
   onImageError(event: any) {
     event.target.src = this.postService.getPlaceholderImage();
   }
+
+  generatePost() {
+    const title = this.postForm.get('title')?.value;
+    if (!title) {
+      this.errorMessage = 'Please provide a title to generate the post.';
+      return;
+    }
+
+    const request: CreatePostOnlyTitleRequestDto = { title };
+
+    this.postService.generatePost(request).subscribe({
+      next: (post: Post) => {
+        this.populatePostForm(post);
+      },
+      error: (error) => {
+        console.error('Error generating post:', error);
+        this.errorMessage = 'Error generating post.';
+      }
+    });
+  }
+
+  populatePostForm(post: Post) {
+    this.postForm.patchValue({
+      title: post.title,
+      topicName: this.getTopicName(post.topicId),
+      content: post.content
+    });
+
+    this.tags.clear();
+    if (post.tags) {
+      post.tags.forEach(tag => this.addTag(tag.name));
+    }
+  }
+
 }
