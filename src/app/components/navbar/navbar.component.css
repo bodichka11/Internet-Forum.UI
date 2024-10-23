@@ -1,3 +1,14 @@
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --background-color: #f4f4f9;
+  --navbar-color: #6666ff;
+  --text-color: #555;
+  --hover-color: #0056b3;
+  --danger-color: #dc3545;
+  --dark-color: #15293c;
+}
+
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f4f4f9;
@@ -6,33 +17,43 @@ body {
   box-sizing: border-box;
 }
 
+.container-fluid {
+  border-bottom: 2px solid #000000;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #6666ff;
+  background-image: linear-gradient(to right, #6666ff, rgb(109, 72, 149));
+}
+
 .navbar {
-  background-color: #ffffff;
-  border-bottom: 1px solid #e7e7e7;
+  margin: 0;
+  padding: 0;
+  border: 2px black;
 }
 
 .navbar-brand {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #007bff;
+  color: #1a1aff;
   transition: color 0.3s ease;
 }
 
 .navbar-brand:hover {
-  color: #0056b3;
+  color: #3333ff;
 }
 
 .navbar-nav .nav-link {
-  color: #555;
+  color: #1a1aff;
   transition: color 0.3s ease;
 }
 
 .navbar-nav .nav-link:hover {
-  color: #007bff;
+  color: #3333ff;
 }
 
 .navbar-toggler {
-  border-color: #007bff;
+  border-color: #700086;
 }
 
 .navbar-toggler-icon {
@@ -40,14 +61,14 @@ body {
 }
 
 .authenticated .username-link {
-  color: #007bff;
+  color: #1a1aff;
   font-weight: bold;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .authenticated .username-link:hover {
-  color: #0056b3;
+  color: #3333ff;
 }
 
 .authenticated .avatar-container {
@@ -78,6 +99,6 @@ body {
 }
 
 .btn-outline-dark:hover {
-  background-color: #343a40;
+  background-color: #1a1aff;
   color: #fff;
 }

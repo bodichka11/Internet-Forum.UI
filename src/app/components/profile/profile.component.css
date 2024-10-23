@@ -6,6 +6,15 @@ body {
   box-sizing: border-box;
 }
 
+.profile-background {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  background-attachment: fixed;
+  background-image: linear-gradient(to right, #6666ff, rgb(109, 72, 149));
+}
+
 .profile-edit {
   max-width: 800px;
   margin: 40px auto;
@@ -13,6 +22,7 @@ body {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-image: linear-gradient(to bottom, #b3b3ff, #e6e6ff);
 }
 
 .avatar-container {

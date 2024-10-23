@@ -12,6 +12,7 @@ import { JwtModule, JwtInterceptor } from '@auth0/angular-jwt';
 import { AuthGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { PopularPostsComponent } from './components/popular-posts/popular-posts.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 export function tokenGetter() 
 {
@@ -27,6 +28,7 @@ export function tokenGetter()
     RegisterComponent,
     ProfileComponent,
     PopularPostsComponent,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,
