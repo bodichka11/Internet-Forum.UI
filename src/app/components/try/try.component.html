@@ -1,0 +1,139 @@
+<div class="background">
+    <app-navbar></app-navbar>
+  
+    <div class="search-container">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Search by title..." (input)="searchPosts()"/>
+      <button (click)="resetSearch()" *ngIf="isSearching">Reset</button>
+    </div>
+    
+  
+    <div class="posts-container">
+      <h2>Latest Posts</h2>
+      <ng-container *ngIf="errorMessage; else postsContent">
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      </ng-container>
+      <ng-template #postsContent>
+        <ng-container *ngIf="posts.length === 0; else postsList">
+          <p>There are no posts at the moment.</p>
+        </ng-container>
+        <ng-template #postsList>
+          <ng-container *ngIf="!editingPost; else editForm">
+            <app-post-list 
+              [posts]="posts" 
+              [currentUserId]="currentUser?.id!"
+              [topics]="topics"
+              (edit)="startEditingPost($event)"
+              (delete)="onDeletePost($event)"
+              (react)="onReact($event)"
+              (addComment)="onAddComment($event)"
+              (editComment)="onEditComment($event)"
+              (deleteComment)="onDeleteComment($event)"
+              (reactToComment)="onReactToComment($event)">
+            </app-post-list>
+          </ng-container>
+          
+          <ng-template #editForm>
+            <div class="edit-post-form">
+              <h3>Edit Post</h3>
+              <form [formGroup]="editPostForm" (ngSubmit)="onEditPostSubmit()">
+                <div class="post-field">
+                    <input id="editTitle" type="text" formControlName="title">
+                </div>
+                <div class="post-field">
+                  <label for="editTopicName">Topic:</label>
+                  <select id="editTopicName" formControlName="topicName">
+                    <option value="">Select a topic</option>
+                    <option *ngFor="let topic of topics" [value]="topic.name">{{ topic.name }}</option>
+                  </select>
+                </div>
+                <div class="post-field">
+                  <label for="editContent">Content:</label>
+                  <textarea id="editContent" formControlName="content"></textarea>
+                </div>
+                <div class="post-field">
+                  <label for="editImages">Images:</label>
+                  <input type="file" id="editImages" (change)="onFileSelected($event)" multiple>
+                </div>
+                <div formArrayName="tags">
+                    <h4>Tags:</h4>
+                    <div *ngFor="let tag of editPostForm.get('tags')?.value; let i = index">
+                      <input [formControlName]="i" placeholder="Tag name">
+                      <button type="button" (click)="removeEditTag(i)">Remove</button>
+                    </div>
+                    <button type="button" (click)="addEditTag()">Add Tag</button>
+                  </div>                  
+                <button type="submit" [disabled]="editPostForm.invalid">Update Post</button>
+                <button type="button" (click)="cancelEditingPost()">Cancel</button>
+              </form>
+            </div>
+          </ng-template>
+        </ng-template>
+      </ng-template>
+  
+      <div class="pagination-controls">
+        <button type="button" (click)="previousPage()" [disabled]="currentPage === 1" class="pagination-button">Previous</button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">Next</button>
+      </div>
+    </div>
+  
+    <div class="create-post-container">
+      <h2>Create a Post</h2>
+      <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+        <div class="post-field">
+          <label for="title">Title:</label>
+          <textarea id="title" formControlName="title"></textarea>
+          <div *ngIf="postForm.get('title')?.invalid && postForm.get('title')?.touched" class="error-message">
+            Title is required and must be at least 3 characters long.
+          </div>
+        </div>
+  
+        <div class="post-field">
+          <label for="topicName">Topic:</label>
+          <select id="topicName" formControlName="topicName">
+            <option value="">Select a topic</option>
+            <option *ngFor="let topic of topics" [value]="topic.name">{{ topic.name }}</option>
+          </select>
+          <div *ngIf="postForm.get('topicName')?.invalid && postForm.get('topicName')?.touched" class="error-message">
+            Topic is required.
+          </div>
+        </div>
+  
+        <div class="post-field">
+          <label for="content">Content:</label>
+          <textarea id="content" formControlName="content"></textarea>
+          <div *ngIf="postForm.get('content')?.invalid && postForm.get('content')?.touched" class="error-message">
+            Content is required.
+          </div>
+        </div>
+  
+        <div class="post-field">
+          <label for="images">Images:</label>
+          <input type="file" id="images" (change)="onFileSelected($event)" multiple>
+        </div>
+  
+        <div class="tags-section" formArrayName="tags">
+          <label>Tags:</label>
+          <div *ngFor="let tag of tags.controls; let i = index;" class="tag-input-group">
+            <input [formControlName]="i" placeholder="Enter tag">
+            <button type="button" (click)="removeTag(i)" class="remove-tag-button">Remove</button>
+          </div>
+          <button type="button" (click)="addTag()" class="add-tag-button">Add Tag</button>
+        </div>
+  
+        <div class="post-field">
+          <button type="button" (click)="generatePost()" [disabled]="postForm.get('title')?.invalid" class="generate-button">Generate Post</button>
+        </div>
+  
+        <button type="submit" [disabled]="postForm.invalid" class="submit-button">Create Post</button>
+      </form>
+    </div>
+  
+    <div class="popular-posts-container">
+      <app-popular-posts></app-popular-posts>
+    </div>
+  </div>
+  
+  

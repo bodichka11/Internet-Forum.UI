@@ -80,6 +80,7 @@
             <p>Topic: {{ getTopicName(post.topicId) }}</p>
           </ng-container>
         </div>
+        <button (click)="copyLinkToClipboard(post.link)">Copy Post Link</button>
         <div *ngIf="post.images?.length" class="post-images">
           <ng-container *ngFor="let image of post.images;">
             <img [src]="getImageUrl(image)" (error)="onImageError($event)" alt="Post Image" class="post-image" />

@@ -13,6 +13,11 @@ import { AuthGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { PopularPostsComponent } from './components/popular-posts/popular-posts.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { PostDetailsComponent } from './components/post-details/post-details.component';
+import { PostComponent } from './components/post/post.component';
+import { PostListComponent } from './components/post-list/post-list.component';
+import { TryComponent } from './components/try/try.component';
+import { BasePostComponent } from './components/base-post/base-post.component';
 
 export function tokenGetter() 
 {
@@ -29,6 +34,11 @@ export function tokenGetter()
     ProfileComponent,
     PopularPostsComponent,
     NotFoundComponent,
+    PostDetailsComponent,
+    PostComponent,
+    PostListComponent,
+    TryComponent,
+    BasePostComponent,
   ],
   imports: [
     BrowserModule,

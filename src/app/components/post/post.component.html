@@ -1,0 +1,75 @@
+<div class="post-card">
+    <h3>{{ post.title }}</h3>
+    <div class="post-meta">
+      <span>Published: {{ post.createdAt | date:'medium' }}</span> |
+      <ng-container *ngIf="post.author">
+        <span>Author ID: {{ post.userId }}</span>
+        <span>Name: {{post.author.username}}</span>
+        <span>Email: {{post.author.emailAddress}}</span>
+        <p>Topic: {{ getTopicName(post.topicId) }}</p>
+      </ng-container>
+    </div>
+    <button (click)="copyLinkToClipboard(post.link)">Copy Post Link</button>
+    <div *ngIf="post.images?.length" class="post-images">
+      <ng-container *ngFor="let image of post.images;">
+        <img [src]="getImageUrl(image)" (error)="onImageError($event)" alt="Post Image" class="post-image" />
+      </ng-container>
+    </div>
+    <p class="post-content">{{ post.content }}</p>
+    <div *ngIf="post.tags?.length" class="post-tags">
+      <span *ngFor="let tag of post.tags;" class="post-tag">
+        #{{ tag.name }}
+      </span>
+    </div>
+    <ng-container *ngIf="post.userId === currentUserId">
+      <button type="button" (click)="edit.emit(post)" class="button-edit">Edit</button>
+      <button type="button" (click)="delete.emit(post)" class="button-delete">Delete</button>
+    </ng-container>
+    <div class="post-reactions">
+      <span>Reactions</span>
+      <div *ngFor="let reaction of getUniqueReactions(post.reactions);" class="reaction">
+        <span>{{ getReactionEmoji(reaction.type) }}</span>
+        <span>{{ reactionTypeToString(reaction.type) }}: {{ reaction.count }}</span>
+      </div>
+      <button type="button" (click)="onReact(ReactionType.Like)" class="reaction-button">👍 Like</button>
+      <button type="button" (click)="onReact(ReactionType.Dislike)" class="reaction-button">👎 Dislike</button>
+      <button type="button" (click)="onReact(ReactionType.Heart)" class="reaction-button">❤️ Heart</button>
+      <button type="button" (click)="onReact(ReactionType.Angry)" class="reaction-button">😡 Angry</button>
+    </div>
+    <div class="post-comments">
+      <h4>Comments</h4>
+      <div *ngFor="let comment of post.comments;" class="comment">
+        <ng-container *ngIf="comment">
+          <ng-container *ngIf="editingCommentId !== comment.id; else editingComment">
+            <p><strong>User ID {{ comment.userId }}:</strong> {{ comment.content }}</p>
+            <span>Posted: {{ comment.createdAt | date:'short' }}</span>
+            <ng-container *ngIf="comment.userId === currentUserId">
+              <button (click)="onStartEditingComment(comment)" class="button-edit">Edit</button>
+              <button (click)="onDeleteComment(comment)" class="button-delete">Delete</button>
+            </ng-container>
+          </ng-container>
+          <ng-template #editingComment>
+            <textarea [(ngModel)]="editingCommentContent" class="form-control"></textarea>
+            <button type="button" (click)="onUpdateComment(comment)" class="submit-button">Save</button>
+            <button type="button" (click)="onCancelEditingComment()" class="button-cancel">Cancel</button>
+          </ng-template>
+          <div class="comment-reactions">
+            <span>Reactions</span>
+            <div *ngFor="let reaction of getUniqueReactions(comment.reactions);" class="reaction">
+              <span>{{ getReactionEmoji(reaction.type) }}</span>
+              <span>{{ reactionTypeToString(reaction.type) }}: {{ reaction.count }}</span>
+            </div>
+            <button type="button" (click)="onReactToComment(comment, ReactionType.Like)" class="reaction-button">👍 Like</button>
+            <button type="button" (click)="onReactToComment(comment, ReactionType.Dislike)" class="reaction-button">👎 Dislike</button>
+            <button type="button" (click)="onReactToComment(comment, ReactionType.Heart)" class="reaction-button">❤️ Heart</button>
+            <button type="button" (click)="onReactToComment(comment, ReactionType.Angry)" class="reaction-button">😡 Angry</button>
+          </div>
+        </ng-container>
+      </div>
+      <div class="add-comment">
+        <textarea [(ngModel)]="newCommentContent" placeholder="Add a comment..." class="form-control"></textarea>
+        <button type="button" (click)="onAddComment()" class="submit-button">Post Comment</button>
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,19 @@
+<div *ngIf="post">
+    <app-post
+      [post]="post"
+      [currentUserId]="currentUserId"
+      [topics]="topics"
+      (edit)="onEditPost($event)"
+      (delete)="onDeletePost($event)"
+      (react)="onReactToPost($event)"
+      (addComment)="onAddCommentToPost($event)"
+      (editComment)="onEditComment($event)"
+      (deleteComment)="onDeleteComment($event)"
+      (reactToComment)="onReactToComment($event)"
+    ></app-post>
+  </div>
+  
+  <div *ngIf="errorMessage">
+    <p class="error-message">{{ errorMessage }}</p>
+  </div>
+  

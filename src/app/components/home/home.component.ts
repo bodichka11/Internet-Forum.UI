@@ -501,4 +501,15 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  copyLinkToClipboard(link: string): void {
+    const inputElement = document.createElement('textarea');
+    inputElement.value = link;
+    document.body.appendChild(inputElement);
+    inputElement.select();
+    document.execCommand('copy');
+    document.body.removeChild(inputElement);
+
+    alert('Link copied to clipboard!');
+  }
+
 }

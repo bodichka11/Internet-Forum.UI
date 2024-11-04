@@ -17,4 +17,5 @@ export interface Post {
     images?: string[];
     author: User;
     topic: Topic;
+    link: string;
 }

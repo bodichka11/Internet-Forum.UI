@@ -1,0 +1,16 @@
+<div *ngFor="let post of posts">
+    <app-post 
+      [post]="post" 
+      [currentUserId]="currentUserId"
+      [topics]="topics"
+      (edit)="edit.emit($event)"
+      (delete)="delete.emit($event)"
+      (react)="react.emit($event)"
+      (addComment)="addComment.emit($event)"
+      (editComment)="editComment.emit($event)"
+      (deleteComment)="deleteComment.emit($event)"
+      (reactToComment)="reactToComment.emit($event)">
+      <button (click)="onEditClicked(post)">Edit</button>
+    </app-post>
+  </div>
+  

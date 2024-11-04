@@ -91,4 +91,9 @@ export class PostService {
   getPlaceholderImage(): string {
     return 'assets/placeholder-image.png';
   }
+
+  searchPosts(term: string, page: number, pageSize: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/search?term=${term}&page=${page}&pageSize=${pageSize}`);
+  }
+  
 }
