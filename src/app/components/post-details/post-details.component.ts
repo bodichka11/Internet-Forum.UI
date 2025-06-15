@@ -1,10 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ReactionType } from 'src/app/enums/reaction-type';
+import { CommentCreateDto } from 'src/app/models/dto`s/comment/comment-create-dto';
+import { CommentDto } from 'src/app/models/dto`s/comment/comment-dto';
 import { Post } from 'src/app/models/post';
+import { Reaction } from 'src/app/models/reaction';
 import { User } from 'src/app/models/user';
+import { CommentService } from 'src/app/services/comment.service';
 import { PostService } from 'src/app/services/post.service';
+import { ReactionService } from 'src/app/services/reaction.service';
 import { TopicService } from 'src/app/services/topic.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -24,9 +29,12 @@ export class PostDetailsComponent {
 
   constructor(
     private route: ActivatedRoute,
-    private postService: PostService,
-    private topicService: TopicService,
-    private userService: UserService
+  private router: Router,
+  private postService: PostService,
+  private topicService: TopicService,
+  private userService: UserService,
+  private commentService: CommentService,
+  private reactionService: ReactionService
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +68,19 @@ export class PostDetailsComponent {
     this.postService.getPostById(+postId).subscribe({
       next: (post) => {
         this.post = post;
+        if (post.userId && !post.author) {
+          this.userService.getUser(post.userId).subscribe(user => {
+            post.author = user;
+          });
+        }
+        post.comments?.forEach(comment => {
+          this.userService.getUser(comment.userId).subscribe(user => {
+            comment.author = user;
+          });
+          this.reactionService.getReactionsForComment(comment.id, 1, 10).subscribe(reactions => {
+            comment.reactions = reactions;
+          });
+        });
       },
       error: (error) => this.errorMessage = 'Error loading post: ' + error.message
     });
@@ -77,38 +98,117 @@ export class PostDetailsComponent {
   }
 
   onEditPost(post: Post): void {
-    console.log('Edit post:', post);
-    // Write your logic to edit the post
+    // Перенаправлення на сторінку редагування з параметрами
+    this.router.navigate(['/edit-post', post.id], {
+      state: { post }
+    });
   }
-
+  
   onDeletePost(post: Post): void {
-    console.log('Delete post:', post);
-    // Write your logic to delete the post
+    if (confirm('Are you sure you want to delete this post?')) {
+      this.postService.deletePost(post.id).subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+        error: (error) => {
+          this.errorMessage = 'Failed to delete post: ' + error.message;
+        }
+      });
+    }
   }
-
+  
   onReactToPost(event: { post: Post, reactionType: ReactionType }): void {
-    console.log('React to post:', event);
-    // Write your logic to react to the post
+    const reaction: Reaction = {
+      id: 0, // Default value for id
+      postId: event.post.id,
+      userId: this.currentUserId,
+      type: event.reactionType
+    };
+  
+    this.reactionService.react(reaction).subscribe({
+      next: () => {
+        this.loadPost(event.post.id.toString());
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to react to post: ' + error.message;
+      }
+    });
   }
-
+  
   onAddCommentToPost(event: { postId: number, content: string }): void {
-    console.log('Add comment to post:', event);
-    // Write your logic to add comment to the post
+    if (!event.content.trim()) return;
+  
+    const newComment: CommentCreateDto = {
+      postId: event.postId,
+      content: event.content
+    };
+  
+    this.commentService.createComment(newComment).subscribe({
+      next: (comment) => {
+        if (this.post) {
+          this.post.comments = this.post.comments || [];
+          this.post.comments.push(comment);
+        }
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to add comment: ' + error.message;
+      }
+    });
   }
-
+  
   onEditComment(event: { comment: any, content: string }): void {
-    console.log('Edit comment:', event);
-    // Write your logic to edit comment
+    const updatedComment: CommentDto = {
+      ...event.comment,
+      content: event.content
+    };
+  
+    this.commentService.updateComment(event.comment.id, updatedComment).subscribe({
+      next: (updatedComment) => {
+        if (this.post) {
+          const index = this.post.comments.findIndex(c => c.id === event.comment.id);
+          if (index !== -1) {
+            this.post.comments[index] = updatedComment;
+          }
+          this.loadPost(this.post.id.toString());
+        }
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to update comment: ' + error.message;
+      }
+    });
   }
-
+  
   onDeleteComment(comment: any): void {
-    console.log('Delete comment:', comment);
-    // Write your logic to delete comment
+    if (confirm('Are you sure you want to delete this comment?')) {
+      this.commentService.deleteComment(comment.id).subscribe({
+        next: () => {
+          if (this.post) {
+            this.post.comments = this.post.comments.filter(c => c.id !== comment.id);
+          }
+        },
+        error: (error) => {
+          this.errorMessage = 'Failed to delete comment: ' + error.message;
+        }
+      });
+    }
   }
-
+  
   onReactToComment(event: { comment: any, reactionType: ReactionType }): void {
-    console.log('React to comment:', event);
-    // Write your logic to react to the comment
+    const reaction: Reaction = {
+      id: 0, // Default value for id
+      commentId: event.comment.id,
+      userId: this.currentUserId,
+      type: event.reactionType,
+    };
+  
+    this.reactionService.react(reaction).subscribe({
+      next: () => {
+        this.loadPost(this.post!.id.toString());
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to react to comment: ' + error.message;
+      }
+    });
   }
 
   getImageUrl(imagePath: string): string {

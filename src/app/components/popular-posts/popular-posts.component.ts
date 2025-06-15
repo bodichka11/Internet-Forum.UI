@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { catchError, forkJoin, map, ObservableInput, of } from 'rxjs';
 import { ReactionType } from 'src/app/enums/reaction-type';
 import { Post } from 'src/app/models/post';
 import { Reaction } from 'src/app/models/reaction';
@@ -45,11 +46,62 @@ export class PopularPostsComponent implements OnInit {
 
   loadPopularPosts(): void {
     const count = 10;
-    this.postService.getPopularPosts(count).subscribe(posts => {
-      this.popularPosts = posts;
-      this.popularPosts.forEach((post) => {
-        this.getUser(post);
-      });
+    this.postService.getPopularPosts(count).subscribe({
+      next: (posts) => {
+        this.popularPosts = posts;
+        
+        // Завантажуємо авторів постів та авторів коментарів паралельно
+        const requests: ObservableInput<any>[] = [];
+        
+        // Для кожного поста
+        posts.forEach(post => {
+          // Завантажуємо автора поста
+          requests.push(
+            this.userService.getUser(post.userId).pipe(
+              catchError(error => {
+                console.error(`Error loading post author ${post.userId}:`, error);
+                return of(null);
+              }),
+              map(user => ({ type: 'postAuthor', postId: post.id, user }))
+            )
+          );
+          
+          // Для кожного коментаря в пості
+          post.comments?.forEach(comment => {
+            requests.push(
+              this.userService.getUser(comment.userId).pipe(
+                catchError(error => {
+                  console.error(`Error loading comment author ${comment.userId}:`, error);
+                  return of(null);
+                }),
+                map(user => ({ type: 'commentAuthor', postId: post.id, commentId: comment.id, user }))
+              )
+            );
+          });
+        });
+        
+        forkJoin(requests).subscribe(results => {
+          results.forEach(result => {
+            if (!result) return;
+            
+            if (result.type === 'postAuthor') {
+              const post = this.popularPosts.find(p => p.id === result.postId);
+              if (post) post.author = result.user;
+            } 
+            else if (result.type === 'commentAuthor') {
+              const post = this.popularPosts.find(p => p.id === result.postId);
+              if (post) {
+                const comment = post.comments?.find(c => c.id === result.commentId);
+                if (comment) comment.author = result.user;
+              }
+            }
+          });
+        });
+      },
+      error: (error) => {
+        console.error('Error loading popular posts:', error);
+        this.errorMessage = 'Failed to load popular posts';
+      }
     });
   }
 

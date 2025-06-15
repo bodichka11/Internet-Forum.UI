@@ -1,10 +1,10 @@
 <div class="popular-posts-container">
-  <h2>Популярні Пости</h2>
+  <h2>Popular Posts</h2>
   <button (click)="togglePopularPosts()">
-    {{ showPopularPosts ? 'Закрити Популярні Пости' : 'Завантажити Популярні Пости' }}
+    {{ showPopularPosts ? 'Close Popular Posts' : 'Load Popular Posts' }}
   </button>
   <ng-container *ngIf="showPopularPosts">
-    <div *ngIf="popularPosts.length === 0">Завантаження популярних постів...</div>
+    <div *ngIf="popularPosts.length === 0">Loading Popular Posts....</div>
     <app-post-list 
       *ngIf="popularPosts.length > 0"
       [posts]="popularPosts" 

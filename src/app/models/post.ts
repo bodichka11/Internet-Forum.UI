@@ -15,7 +15,7 @@ export interface Post {
     reactions: Reaction[];
     tags: Tag[];
     images?: string[];
-    author: User;
+    author?: User;
     topic: Topic;
     link: string;
 }

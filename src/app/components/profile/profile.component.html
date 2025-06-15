@@ -1,54 +1,147 @@
-<div class="profile-background">
-<app-navbar></app-navbar>
-<div class="profile-edit">
-  <h2>Edit Profile</h2>
-
-  <div class="avatar-container">
-    <img [src]="user?.imageUrl" alt="User Avatar" class="avatar-image">
-  </div>
-
-  <!-- Avatar upload form -->
-  <div class="avatar-upload">
-    <input type="file" (change)="onFileSelected($event)" accept="image/*">
-    <button class="button" (click)="uploadAvatar()">Upload Avatar</button>
-  </div>
-
-  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input id="username" formControlName="username" type="text" class="form-control" />
-    </div>
-
-    <div class="form-group">
-      <label for="emailAddress">Email Address</label>
-      <input id="emailAddress" formControlName="emailAddress" type="email" class="form-control" />
-    </div>
-
-    <button type="submit" class="button">Update</button>
-  </form>
-
-  <div class="posts-section">
-    <h2>Your Posts</h2>
-    <ng-container *ngIf="posts?.length; else noPosts">
-      <div *ngFor="let post of posts;" class="post-card">
-        <h3>{{ post.title }}</h3>
-        <div class="post-meta">
-          <span>Published: {{ post.createdAt | date:'medium' }}</span> |
+<div class="profile-container">
+  <app-navbar></app-navbar>
+  
+  <div class="profile-content">
+    <div class="profile-section">
+      <div class="profile-header">
+        <div class="avatar-container">
+          <img [src]="user?.imageUrl || 'assets/default-avatar.png'" alt="User Avatar" class="avatar-image">
+          <div class="avatar-overlay" (click)="fileInput.click()">
+            <i class="fas fa-camera"></i>
+          </div>
+          <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
         </div>
-        <div *ngIf="post.images?.length" class="post-images">
-          <img *ngFor="let image of post.images;" [src]="image" alt="Post Image" class="post-image" />
-        </div>
-        <p class="post-content">{{ post.content }}</p>
-        <div *ngIf="post.tags?.length" class="post-tags">
-          <span *ngFor="let tag of post.tags;" class="post-tag">
-            #{{ tag.name }}
-          </span>
+        <h1>{{ user?.username || 'Username' }}</h1>
+        <p class="user-email">{{ user?.emailAddress || 'user@example.com' }}</p>
+      </div>
+
+      <div class="edit-section">
+        <h2><i class="fas fa-user-edit"></i> Edit Profile</h2>
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input id="username" formControlName="username" type="text" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="emailAddress">Email Address</label>
+            <input id="emailAddress" formControlName="emailAddress" type="email" class="form-control" />
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Update Profile
+          </button>
+        </form>
+        <div *ngIf="showConfirmation">
+          <form [formGroup]="profileForm">
+            <button type="button" class="btn btn-primary" (click)="confirmUpdate()">
+              <i class="fas fa-check-circle"></i> Confirm Profile Update
+            </button>
+          
+            <div class="form-group">
+              <label for="confirmationCode">Confirmation Code</label>
+              <input
+                id="confirmationCode"
+                type="text"
+                formControlName="confirmationCode"
+                class="form-control"
+                placeholder="Enter confirmation code"
+              />
+            </div>
+          </form>
         </div>
       </div>
-    </ng-container>
-    <ng-template #noPosts>
-      <p>You have no posts yet.</p>
-    </ng-template>
+    </div>
+    <div class="posts-section">
+      <div class="section-header">
+        <h2><i class="fas fa-newspaper"></i> Your Posts</h2>
+        <div class="posts-count">{{ posts.length || 0 }} posts</div>
+      </div>
+
+      <ng-container *ngIf="posts?.length; else noPosts">
+        <div class="posts-grid">
+          <div *ngFor="let post of posts;" class="post-card">
+            <ng-container *ngIf="editingPostId !== post.id; else editingPost">
+              <div class="post-header">
+                <h3>{{ post.title || 'No title' }}</h3>
+                <div class="post-meta">
+                  <span class="post-date">
+                    <i class="far fa-calendar-alt"></i> 
+                    {{ post.createdAt | date:'mediumDate' }}
+                  </span>
+                  <span class="post-time">
+                    <i class="far fa-clock"></i> 
+                    {{ post.createdAt | date:'shortTime' }}
+                  </span>
+                </div>
+              </div>
+              
+              <div *ngIf="post.images?.length" class="post-images">
+                <img *ngFor="let image of post.images;" [src]="getImageUrl(image)" alt="Post Image" class="post-image" />
+              </div>
+              
+              <p class="post-content">{{ post.content || 'No content' }}</p>
+              
+              <div *ngIf="post.tags?.length" class="post-tags">
+                <span *ngFor="let tag of post.tags;" class="post-tag">
+                  #{{ tag.name }}
+                </span>
+              </div>
+                    
+              <div class="post-actions">
+                <button class="btn btn-sm btn-action" (click)="startEditingPost(post)">
+                  <i class="far fa-edit"></i> Edit
+                </button>
+                <button class="btn btn-sm btn-action" (click)="deletePost(post)">
+                  <i class="far fa-trash-alt"></i> Delete
+                </button>
+              </div>
+            </ng-container>
+            <div class="post-reactions">
+              <span>Reactions</span>
+              <div *ngFor="let reaction of getUniqueReactions(post.reactions);" class="reaction">
+                <span>{{ getReactionEmoji(reaction.type) }}</span>
+                <span>{{ reactionTypeToString(reaction.type) }}: {{ reaction.count }}</span>
+              </div>
+            </div>
+            <ng-template #editingPost>
+              <div class="form-group">
+                <label for="editingPostTitle">Post Title</label>
+                <input [(ngModel)]="editingPostTitle" id="editingPostTitle" placeholder="Post title" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="editingPostContent">Post Content</label>
+                <textarea [(ngModel)]="editingPostContent" id="editingPostContent" placeholder="Post content" class="form-control"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="selectedTopicName">Topic</label>
+                <select [(ngModel)]="selectedTopicName" id="selectedTopicName" class="form-control">
+                  <option value="">Select a topic</option>
+                  <option *ngFor="let topic of topics" [value]="topic.name">{{ topic.name }}</option>
+                </select>
+              </div>
+              <div class="editing-tags">
+                <div *ngFor="let tag of editingPostTags; let i = index">
+                  <label for="tag{{i}}">Tag Name</label>
+                  <input [(ngModel)]="tag.name" id="tag{{i}}" placeholder="Tag name" class="form-control">
+                </div>
+              </div>
+              <button (click)="updatePost(post)" class="submit-button editButton">Save</button>
+              <button type="button" (click)="cancelEditingPost()" class="button-cancel editButton">Cancel</button>
+            </ng-template>
+          </div>
+        </div>
+      </ng-container>
+      
+      <ng-template #noPosts>
+        <div class="no-posts">
+          <i class="far fa-newspaper"></i>
+          <p>You have no posts yet.</p>
+          <button class="btn btn-primary">
+            <a class="nav-link" href="/home">Create First Post</a>
+          </button>
+        </div>
+      </ng-template>
+    </div>
   </div>
-</div>
 </div>

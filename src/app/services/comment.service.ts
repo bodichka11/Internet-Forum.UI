@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CommentCreateDto } from '../models/dto`s/comment/comment-create-dto';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { CommentDto } from '../models/dto`s/comment/comment-dto';
 import { Comment } from '../models/comment';
 
@@ -13,11 +13,13 @@ export class CommentService {
   constructor(private http: HttpClient) { }
 
   createComment(comment: CommentCreateDto): Observable<CommentDto>{
-    return this.http.post<CommentDto>(this.apiUrl, comment);
+    return this.http.post<CommentDto>(this.apiUrl, comment)
+    .pipe(catchError(this.handleModerationError));
   }
 
   updateComment(id: number, comment: CommentDto): Observable<CommentDto>{
-    return this.http.put<CommentDto>(`${this.apiUrl}/${id}`, comment);
+    return this.http.put<CommentDto>(`${this.apiUrl}/${id}`, comment)
+    .pipe(catchError(this.handleModerationError));
   }
 
   deleteComment(id: number): Observable<void>{
@@ -26,5 +28,16 @@ export class CommentService {
 
   getCommentById(id: number): Observable<Comment> {
     return this.http.get<Comment>(`${this.apiUrl}/${id}`);
+  }
+
+  private handleModerationError(error: HttpErrorResponse) {
+    if (error.status === 400 && error.error && error.error.reason) {
+      return throwError(() => ({
+        moderationError: true,
+        reason: error.error.reason,
+        suggestedContent: error.error.suggestedContent
+      }));
+    }
+    return throwError(() => error);
   }
 }

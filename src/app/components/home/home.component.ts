@@ -3,6 +3,7 @@ import { Component, OnInit } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { debounceTime, distinctUntilChanged, map, Subject, switchMap } from "rxjs";
 import { ReactionType } from "src/app/enums/reaction-type";
+import { Comment } from "src/app/models/comment";
 import { CommentCreateDto } from "src/app/models/dto`s/comment/comment-create-dto";
 import { CommentDto } from "src/app/models/dto`s/comment/comment-dto";
 import { PostCreateDto } from "src/app/models/dto`s/post/post-create-dto";
@@ -25,6 +26,9 @@ import { UserService } from "src/app/services/user.service";
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
+  commentError: { postId: number, message: string, suggestion: string } | null = null;
+  editingCommentError: { message: string, suggestion: string } | null = null;
+
   generatePostTitle: string = '';
 
   searchTerm: string = '';
@@ -187,6 +191,18 @@ export class HomeComponent implements OnInit {
       },
     });
   }
+
+  getUserByComment(comment: Comment) : void {
+    this.userService.getUser(comment.userId).subscribe({
+      next: (user) => {
+        comment.author = user;
+      },
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage = `No user with id ${comment.userId}: ${error.message}`;
+      },
+    });
+  }
+
   getReactionEmoji(reactionType: ReactionType): string {
     const emojiMap: Record<ReactionType, string> = {
       [ReactionType.Like]: "👍",
@@ -222,7 +238,7 @@ export class HomeComponent implements OnInit {
     };
 
     if (isComment) {
-      reaction.commentid = reactionTarget.id;
+      reaction.commentId = reactionTarget.id;
     } else {
       reaction.postId = reactionTarget.id;
     }
@@ -244,6 +260,9 @@ export class HomeComponent implements OnInit {
           this.totalPages = Math.ceil(this.totalItems / this.pageSize);
           this.posts.forEach((post) => {
             this.getUser(post);
+            post.comments?.forEach(comment => {
+              this.getUserByComment(comment);
+            });
           });
         },
         error: (error: HttpErrorResponse) => {
@@ -266,12 +285,13 @@ export class HomeComponent implements OnInit {
 
   addComment(postId: number): void {
     if (!this.newCommentContent.trim()) return;
-
+  
     const newComment: CommentCreateDto = {
       postId: postId,
       content: this.newCommentContent,
     };
-
+    this.commentError = null;
+  
     this.commentService.createComment(newComment).subscribe({
       next: (comment) => {
         const post = this.posts.find(p => p.id === postId);
@@ -280,10 +300,28 @@ export class HomeComponent implements OnInit {
         }
         this.newCommentContent = '';
       },
-      error: (error: HttpErrorResponse) => {
-        this.errorMessage = `Error adding comment: ${error.message}`;
+      error: (error) => {
+        if (error.moderationError) {
+          // Show moderation error
+          this.commentError = {
+            postId: postId,
+            message: `The comment contains inappropriate content: ${error.reason}`,
+            suggestion: error.suggestedContent || ''
+          };
+        } else {
+          // Other types of errors
+          console.error('Error adding comment:', error);
+          // Optionally show a general error message
+        }
       }
     });
+  }
+
+  useCommentSuggestion(postId: number): void {
+    if (this.commentError && this.commentError.postId === postId && this.commentError.suggestion) {
+      this.newCommentContent = this.commentError.suggestion;
+      this.commentError = null;
+    }
   }
 
   startEditingComment(comment: CommentDto): void {
@@ -318,10 +356,24 @@ export class HomeComponent implements OnInit {
         this.cancelEditingComment();
         this.loadPosts();
       },
-      error: (error: HttpErrorResponse) => {
-        this.errorMessage = `Error updating comment: ${error.message}`;
+      error: (error) => {
+        if (error.moderationError) {
+          this.editingCommentError = {
+            message: `The comment contains inappropriate content: ${error.reason}`,
+            suggestion: error.suggestedContent || ''
+          };
+        } else {
+          console.error('Error updating comment:', error);
+        }
       }
     });
+  }
+
+  useEditCommentSuggestion(): void {
+    if (this.editingCommentError && this.editingCommentError.suggestion) {
+      this.editingCommentContent = this.editingCommentError.suggestion;
+      this.editingCommentError = null;
+    }
   }
 
   deleteComment(comment: CommentDto): void {
@@ -501,15 +553,25 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  copyLinkToClipboard(link: string): void {
-    const inputElement = document.createElement('textarea');
-    inputElement.value = link;
-    document.body.appendChild(inputElement);
-    inputElement.select();
-    document.execCommand('copy');
-    document.body.removeChild(inputElement);
+  // copyLinkToClipboard(link: string): void {
+  //   const inputElement = document.createElement('textarea');
+  //   inputElement.value = link;
+  //   document.body.appendChild(inputElement);
+  //   inputElement.select();
+  //   document.execCommand('copy');
+  //   document.body.removeChild(inputElement);
 
-    alert('Link copied to clipboard!');
+  //   alert('Link copied to clipboard!');
+  // }
+
+  copyLinkToClipboard(postId: number): void {
+    const baseUrl = window.location.origin;
+    const postUrl = `${baseUrl}/posts/${postId}`;
+    
+    navigator.clipboard.writeText(postUrl).then(() => {
+      alert('Post link copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+    });
   }
-
 }

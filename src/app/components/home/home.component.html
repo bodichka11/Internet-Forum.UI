@@ -5,7 +5,7 @@
   <button (click)="resetSearch()" *ngIf="isSearching">Reset</button>
 </div>
 <div class="posts-container">
-  <h2>Останні пости</h2>
+  <h2>Last Posts</h2>
   <ng-container *ngIf="errorMessage; else postsContent">
     <div class="error-message">
       {{ errorMessage }}
@@ -13,47 +13,57 @@
   </ng-container>
   <ng-template #postsContent>
     <ng-container *ngIf="posts && posts.length === 0; else postsList">
-      <p>Наразі немає постів.</p>
+      <p>No posts for now</p>
     </ng-container>
   </ng-template>
   <div class="create-post-container">
-    <h2>Створити пост</h2>
+    <h2>Create Post</h2>
     <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+      
       <div class="post-field">
-        <label for="title">title:</label>
-        <textarea id="title" formControlName="title"></textarea>
-        <div *ngIf="postForm.get('title')?.invalid && postForm.get('title')?.touched">
-          title є обов'язковим.
+        <label for="title">Title:</label>
+        <textarea id="title" formControlName="title"
+          [ngClass]="{ 'invalid-field': postForm.get('title')?.invalid && postForm.get('title')?.touched }">
+        </textarea>
+        <div *ngIf="postForm.get('title')?.invalid && postForm.get('title')?.touched" class="error-message">
+          ⚠️ Title is required
         </div>
       </div>
+  
       <div class="post-field">
         <label for="topicName">Topic:</label>
-        <select id="topicName" formControlName="topicName">
+        <select id="topicName" formControlName="topicName"
+          [ngClass]="{ 'invalid-field': postForm.get('topicName')?.invalid && postForm.get('topicName')?.touched }">
           <option value="">Select a topic</option>
           <option *ngFor="let topic of topics" [value]="topic.name">{{ topic.name }}</option>
         </select>
-        <div *ngIf="postForm.get('topicName')?.invalid && postForm.get('topicName')?.touched">
-          Topic is required.
+        <div *ngIf="postForm.get('topicName')?.invalid && postForm.get('topicName')?.touched" class="error-message">
+          ⚠️ Topic is required
         </div>
       </div>
+  
       <div class="post-field">
-        <label for="content">Контент:</label>
-        <textarea id="content" formControlName="content"></textarea>
-        <div *ngIf="postForm.get('content')?.invalid && postForm.get('content')?.touched">
-          Контент є обов'язковим.
+        <label for="content">Content:</label>
+        <textarea id="content" formControlName="content"
+          [ngClass]="{ 'invalid-field': postForm.get('content')?.invalid && postForm.get('content')?.touched }">
+        </textarea>
+        <div *ngIf="postForm.get('content')?.invalid && postForm.get('content')?.touched" class="error-message">
+          ⚠️ Content is required
         </div>
       </div>
+  
       <div class="post-field">
         <label for="images">Images:</label>
         <input type="file" id="images" (change)="onFileSelected($event)" multiple>
       </div>
+  
       <div class="tags-section" formArrayName="tags">
         <label for="tags">Tags:</label>
         <div *ngFor="let tag of tags.controls; let i = index;" [formGroupName]="i" class="tag-input-group">
-          <input formControlName="name" placeholder="Введіть тег">
-          <button type="button" class="remove-tag-button" (click)="removeTag(i)">Видалити</button>
+          <input formControlName="name" placeholder="Paste tag">
+          <button type="button" class="remove-tag-button" (click)="removeTag(i)">Remove</button>
         </div>
-        <button type="button" class="add-tag-button" (click)="addTag()">Додати тег</button>
+        <button type="button" class="add-tag-button" (click)="addTag()">Add</button>
         <div class="tags-list">
           <span *ngFor="let tag of tags.controls; let i = index;" class="tag-item">
             {{ tag.value.name }}
@@ -61,26 +71,32 @@
           </span>
         </div>
       </div>
+  
       <div class="post-field">
-        <button type="button" class="generate-button" (click)="generatePost()" [disabled]="postForm.get('title')?.invalid">Згенерувати пост</button>
+        <button type="button" class="generate-button"
+          (click)="generatePost()"
+          [disabled]="postForm.get('title')?.invalid">
+          Generate Post With AI
+        </button>
       </div>
-      <button type="submit" [disabled]="postForm.invalid" class="submit-button">Створити пост</button>
+  
+      <button type="submit" [disabled]="postForm.invalid" class="submit-button">Create Post</button>
     </form>
-  </div>
+  </div>  
   <ng-template #postsList>
     <div *ngFor="let post of posts;" class="post-card">
       <ng-container *ngIf="editingPostId !== post.id; else editingPost">
         <h3>{{ post.title }}</h3>
         <div class="post-meta">
-          <span>Опубліковано: {{ post.createdAt | date:'medium' }}</span> |
+          <span>Published: {{ post.createdAt | date:'medium' }}</span> |
           <ng-container *ngIf="post.author">
-            <span>Автор ID: {{ post.userId }}</span>
-            <span>Ім'я: {{post.author.username}}</span>
-            <span>Мейл: {{post.author.emailAddress}}</span>
+            <span>Author Id: {{ post.userId }}</span>
+            <span>Name: {{post.author.username}}</span>
+            <span>Email: {{post.author.emailAddress}}</span>
             <p>Topic: {{ getTopicName(post.topicId) }}</p>
           </ng-container>
         </div>
-        <button (click)="copyLinkToClipboard(post.link)">Copy Post Link</button>
+        <button class="copyButton" (click)="copyLinkToClipboard(post.id)">Copy Link</button>
         <div *ngIf="post.images?.length" class="post-images">
           <ng-container *ngFor="let image of post.images;">
             <img [src]="getImageUrl(image)" (error)="onImageError($event)" alt="Post Image" class="post-image" />
@@ -119,7 +135,7 @@
         <button type="button" (click)="cancelEditingPost()" class="button-cancel">Cancel</button>
       </ng-template>
       <div class="post-reactions">
-        <span>Реакції</span>
+        <span>Reactions</span>
         <div *ngFor="let reaction of getUniqueReactions(post.reactions);" class="reaction">
           <span>{{ getReactionEmoji(reaction.type) }}</span>
           <span>{{ reactionTypeToString(reaction.type) }}: {{ reaction.count }}</span>
@@ -134,7 +150,7 @@
         <div *ngFor="let comment of post.comments;" class="comment">
           <ng-container *ngIf="comment">
             <ng-container *ngIf="editingCommentId !== comment.id; else editingComment">
-              <p><strong>User ID {{ comment.userId }}:</strong> {{ comment.content }}</p>
+              <p><strong>{{ comment.author?.username }}</strong> : {{comment.content}}</p>
               <span>Posted: {{ comment.createdAt | date:'short' }}</span>
               <ng-container *ngIf="comment.userId === currentUserId">
                 <button (click)="startEditingComment(comment)" class="button-edit">Edit</button>
@@ -143,9 +159,23 @@
             </ng-container>
             <ng-template #editingComment>
               <textarea [(ngModel)]="editingCommentContent" class="form-control"></textarea>
+            
+              <!-- Display moderation error when editing a comment -->
+              <div *ngIf="editingCommentError" class="comment-error">
+                <p class="error-message">{{ editingCommentError.message }}</p>
+                <div *ngIf="editingCommentError.suggestion" class="suggestion-container">
+                  <p>Suggested version:</p>
+                  <p class="suggested-text">{{ editingCommentError.suggestion }}</p>
+                  <button type="button" (click)="useEditCommentSuggestion()" class="suggestion-button">
+                    Use suggestion
+                  </button>
+                </div>
+              </div>
+            
               <button type="button" (click)="updateComment(comment)" class="submit-button">Save</button>
               <button type="button" (click)="cancelEditingComment()" class="button-cancel">Cancel</button>
             </ng-template>
+            
             <div class="comment-reactions">
               <span>Reactions</span>
               <div *ngFor="let reaction of getUniqueReactions(comment.reactions);" class="reaction">
@@ -161,7 +191,20 @@
         </div>
         <div class="add-comment">
           <textarea [(ngModel)]="newCommentContent" placeholder="Add a comment..." class="form-control"></textarea>
-          <button type="button" (click)="addComment(post.id)" class="submit-button">Post Comment</button>
+        
+          <!-- Display moderation error for the new comment -->
+          <div *ngIf="commentError && commentError.postId === post.id" class="comment-error">
+            <p class="error-message">{{ commentError.message }}</p>
+            <div *ngIf="commentError.suggestion" class="suggestion-container">
+              <p>Suggested version:</p>
+              <p class="suggested-text">{{ commentError.suggestion }}</p>
+              <button type="button" (click)="useCommentSuggestion(post.id)" class="suggestion-button">
+                Use suggestion
+              </button>
+            </div>
+          </div>
+        
+          <button type="button" (click)="addComment(post.id)" class="submit-button">Post comment</button>
         </div>
       </div>
     </div>

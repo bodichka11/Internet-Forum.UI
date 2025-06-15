@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Post } from '../models/post';
 import { PostCreateDto } from '../models/dto`s/post/post-create-dto';
 import { PostUpdateDto } from '../models/dto`s/post/post-update-dto';
@@ -31,7 +31,12 @@ export class PostService {
   }
 
   getUsersPosts(): Observable<Post[]>{
-    return this.http.get<Post[]>(`${this.apiUrl}/my-posts`);
+    return this.http.get<Post[]>(`${this.apiUrl}/my-posts`).pipe(
+      map(posts => posts.map(post => ({
+        ...post,
+        reactions: post.reactions || []
+      })))
+    );
   }
 
   getPopularPosts(count: number): Observable<Post[]> {

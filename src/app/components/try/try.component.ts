@@ -309,7 +309,7 @@ export class TryComponent {
     const reaction: Reaction = {
       id: 0,
       userId: this.currentUser?.id ?? 0,
-      commentid: event.comment.id,
+      commentId: event.comment.id,
       type: event.reactionType
     };
     this.reactionService.react(reaction).subscribe({

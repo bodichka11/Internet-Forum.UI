@@ -1,37 +1,92 @@
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f9;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Основні стилі */
+:root {
+  --primary-color: #6a5acd;
+  --secondary-color: #9370db;
+  --accent-color: #483d8b;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+  --text-color: #495057;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
 }
 
-.profile-background {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+app-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.profile-container {
+  padding-top: 60px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5ff;
   min-height: 100vh;
-  background-attachment: fixed;
+  color: var(--text-color);
+  background-color: #6666ff;
   background-image: linear-gradient(to right, #6666ff, rgb(109, 72, 149));
 }
 
-.profile-edit {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-image: linear-gradient(to bottom, #b3b3ff, #e6e6ff);
+.form-group{
+  font-weight: none !important;
+  color: rgb(19, 0, 26) !important;
+}
+
+.form-group label {
+  font-weight: none !important;
+  color: rgb(19, 0, 26) !important;
+}
+
+.editing-tags label {
+  font-weight: none !important;
+  color: rgb(19, 0, 26) !important;
+}
+.editButton {
+  margin: 2px;
+}
+
+
+.profile-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+.profile-section {
+  background: transparent;
+  border-radius: 12px;
+  border: 1px solid black;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .avatar-container {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   overflow: hidden;
-  margin: 0 auto 20px auto;
-  border: 3px solid #007bff;
+  margin: 0 auto 1.5rem;
+  border: 4px solid var(--primary-color);
+  position: relative;
+  transition: var(--transition);
+}
+
+.avatar-container:hover {
+  transform: scale(1.05);
 }
 
 .avatar-image {
@@ -40,498 +95,432 @@ body {
   object-fit: cover;
 }
 
-.avatar-upload {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.avatar-upload input[type="file"] {
-  display: block;
-  margin: 0 auto 10px;
-}
-
-.avatar-upload .button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(106, 90, 205, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition);
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.avatar-upload .button:hover {
-  background-color: #0056b3;
+.avatar-overlay i {
+  color: white;
+  font-size: 2rem;
+}
+
+.avatar-container:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.profile-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--dark-color);
+}
+
+.user-email {
+  color: var(--secondary-color);
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+}
+
+.edit-section {
+  margin-top: 2rem;
+}
+
+.edit-section h2 {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .profile-form .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .profile-form label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #555;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--dark-color);
 }
 
 .profile-form .form-control {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1em;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: var(--transition);
 }
 
 .profile-form .form-control:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
+  outline: none;
 }
 
-.profile-form .button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: var(--transition);
 }
 
-.profile-form .button:hover {
-  background-color: #0056b3;
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: #483d8b 1px solid;
+  margin-bottom: 5px !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
 }
 
 .posts-section {
-  margin-top: 40px;
+  background: transparent;
+  border-radius: 12px;
+  border: 1px solid black;
+  padding: 2rem;
+  box-shadow: var(--shadow);
 }
 
-.posts-section h2 {
-  color: #333;
-  text-align: center;
-  margin-bottom: 20px;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
 }
 
-.error-message {
-  color: red;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: center;
+.section-header h2 {
+  font-size: 1.5rem;
+  color: var(--dark-color);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.post-form label {
-  display: block;
-  margin: 10px 0 5px;
-  font-weight: bold;
-  color: #555;
-}
-
-.post-form input,
-.post-form textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  font-size: 1em;
-}
-
-.post-form input:focus,
-.post-form textarea:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  outline: none;
-}
-
-.post-form button {
-  display: inline-block;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
+.posts-count {
+  background: var(--primary-color);
   color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 10px;
-  margin-right: 10px;
-  font-size: 1em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-.post-form button:last-child {
-  margin-right: 0;
-}
-
-.post-form button:hover {
-  background-color: #0056b3;
-}
-
-.post-form .formArrayName .button {
-  background-color: #dc3545;
-  border-radius: 4px;
-  padding: 5px 10px;
-  margin-left: 10px;
-  cursor: pointer;
-  color: white;
-  transition: background-color 0.3s;
-}
-
-.post-form .formArrayName .button:hover {
-  background-color: #c82333;
-}
-
-.post-form div {
-  margin-bottom: 15px;
-}
-
-.post-form div:last-child {
-  margin-bottom: 0;
-}
-
-.ng-invalid.ng-touched {
-  border-color: #e74c3c;
-}
-
-.ng-invalid.ng-touched + div {
-  color: #e74c3c;
-  font-size: 0.9em;
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
 .post-card {
-  margin: 50px;
-  width: 300px;
-  background-color: #ffffff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s;
-}
-
-.post-card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.post-card h3 {
-  margin-top: 0;
-  font-size: 1.5em;
-  color: #333;
-}
-
-.post-meta {
-  color: #777;
-  font-size: 0.9em;
-  margin-bottom: 10px;
+  background-color: transparent !important;
+  border: 1px solid #483d8b;
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: white;
+  color: black;
 }
 
 .post-meta span {
-  display: inline-block;
-  margin-right: 10px;
+  color: black;
+}
+
+
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+  margin-bottom: 1rem;
+}
+
+.post-header h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: var(--dark-color);
+}
+
+.post-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.post-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .post-images {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
+  margin: 1rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  height: auto;
 }
 
 .post-image {
-  max-width: 100px;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  transition: transform 0.3s;
+  width: 100%;
+  border-radius: 8px;
+  transition: var(--transition);
 }
 
 .post-image:hover {
-  transform: scale(1.1);
+  transform: scale(1.03);
 }
 
 .post-content {
-  margin-top: 15px;
-  font-size: 1.1em;
+  margin: 1rem 0;
   line-height: 1.6;
+  flex-grow: 1;
 }
 
 .post-tags {
-  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
 }
 
 .post-tag {
-  display: inline-block;
-  background-color: #007bff;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 15px;
-  margin-right: 5px;
-  transition: background-color 0.3s;
+  background: #e9ecef;
+  color: var(--primary-color);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: var(--transition);
 }
 
 .post-tag:hover {
-  background-color: #0056b3;
-}
-
-.post-reactions,
-.post-comments {
-  margin-top: 20px;
-}
-
-.reaction {
-  margin-right: 10px;
-}
-
-.post-comments .comment {
-  background-color: #f1f1f1;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-}
-
-.post-comments .comment p {
-  margin: 0;
-}
-
-.button {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
+  background: var(--primary-color);
   color: white;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.button:hover {
-  background-color: #0056b3;
+.post-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
-.create-post-container {
-  background-color: #ffffff;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
 }
 
-.create-post-container h2 {
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 1.5em;
+.btn-action {
+  background: #f8f9fa;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
 
-.post-field {
-  margin-bottom: 20px;
+.btn-action:hover {
+  background: #e9ecef;
+  transform: none;
 }
 
-.post-field label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #555;
+.no-posts {
+  text-align: center;
+  padding: 3rem 0;
 }
 
-.post-field input,
-.post-field textarea {
+.no-posts i {
+  font-size: 3rem;
+  color: #adb5bd;
+  margin-bottom: 1rem;
+}
+
+.no-posts p {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+/* Стилі для форми редагування поста */
+.editing-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.editing-tags input {
+  flex: 1;
+  min-width: 120px;
+}
+
+.form-control {
+  margin-bottom: 1rem;
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1em;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: var(--transition);
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
-.post-field input:focus,
-.post-field textarea:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
   outline: none;
 }
 
-.post-field textarea {
-  min-height: 100px;
+textarea.form-control {
+  min-height: 120px;
   resize: vertical;
 }
 
-.post-field [formArrayName="tags"] {
-  margin-top: 15px;
-}
-
-.post-field [formArrayName="tags"] input {
-  width: calc(100% - 100px);
-  margin-right: 10px;
-}
-
-.post-field [formArrayName="tags"] button {
-  padding: 5px 10px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
+.submit-button {
+  background-color: #f8f9fa;
+  color: var(--text-color);
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: var(--transition);
 }
 
-.post-field [formArrayName="tags"] button:hover {
-  background-color: #c82333;
+.submit-button:hover {
+  background-color: var(black);
+  transform: translateY(-2px);
 }
 
-.post-field [formArrayName="tags"] + button {
-  margin-top: 10px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
+.button-cancel {
+  background-color: #f8f9fa;
+  color: var(--text-color);
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: var(--transition);
 }
 
-.post-field [formArrayName="tags"] + button:hover {
-  background-color: #218838;
-}
-
-.create-post-container form button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.create-post-container form button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-
-.create-post-container form button[type="submit"]:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.post-field div {
-  color: #dc3545;
-  font-size: 0.9em;
-  margin-top: 5px;
-}
-
-.tags-section {
-  margin-top: 20px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 15px;
-  background-color: #f9f9f9;
-}
-
-.tags-section label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: #333;
-}
-
-.tag-input-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.tag-input-group input {
-  flex-grow: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9em;
-}
-
-.tag-input-group button {
-  margin-left: 10px;
-  padding: 8px 12px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.tag-input-group button:hover {
-  background-color: #c82333;
-}
-
-.add-tag-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-size: 1em;
-}
-
-.add-tag-button:hover {
-  background-color: #218838;
-}
-
-.tags-list {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.tag-item {
+.button-cancel:hover {
   background-color: #e9ecef;
-  color: #495057;
-  padding: 5px 10px;
-  margin: 0 5px 5px 0;
-  border-radius: 20px;
-  font-size: 0.9em;
-  display: inline-flex;
+}
+
+.post-reactions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.post-reactions span {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.reaction {
+  display: flex;
   align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
 }
 
-.tag-item button {
-  background: none;
-  border: none;
-  color: #6c757d;
-  cursor: pointer;
-  font-size: 1.2em;
-  margin-left: 5px;
-  padding: 0;
-  line-height: 1;
+.reaction span:first-child {
+  font-size: 1.2rem;
 }
 
-.tag-item button:hover {
-  color: #dc3545;
+ng-container, ng-template {
+  transition: opacity 0.3s ease;
 }
 
-.Posts {
+/* Додаткові стилі для кращого відображення форми */
+.editing-post {
   display: flex;
   flex-direction: column;
-  width: 50%;
-  height: 100%;
+  gap: 1rem;
 }
 
-.posts-container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.editing-post select.form-control {
+  margin-bottom: 1rem;
 }
 
-.posts-container h2 {
-  color: #333;
+label {
+  display: block;
   font-weight: bold;
-  text-align: center;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+textarea,
+input[type="text"],
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #818181 !important;
+  border-radius: 4px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Стилі для мобільних пристроїв */
+@media (max-width: 992px) {
+  .profile-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-section {
+    position: static;
+  }
+}
+
+@media (max-width: 576px) {
+  .profile-content {
+    padding: 1rem;
+  }
+  
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editing-tags input {
+    min-width: 100%;
+  }
+  
+  .submit-button, .button-cancel {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
 }

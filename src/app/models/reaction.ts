@@ -4,6 +4,6 @@ export interface Reaction {
     id: number;
     userId: number;
     postId?: number;
-    commentid?: number;
+    commentId?: number;
     type: ReactionType;
 }

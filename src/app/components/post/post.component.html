@@ -1,15 +1,17 @@
+<div class="wrapper">
+<div class="centered-wrapper">
 <div class="post-card">
     <h3>{{ post.title }}</h3>
     <div class="post-meta">
       <span>Published: {{ post.createdAt | date:'medium' }}</span> |
       <ng-container *ngIf="post.author">
         <span>Author ID: {{ post.userId }}</span>
-        <span>Name: {{post.author.username}}</span>
-        <span>Email: {{post.author.emailAddress}}</span>
+        <span>Name: {{ post.author?.username }}</span>
+        <span>Email: {{ post.author?.emailAddress }}</span>
         <p>Topic: {{ getTopicName(post.topicId) }}</p>
       </ng-container>
     </div>
-    <button (click)="copyLinkToClipboard(post.link)">Copy Post Link</button>
+    <button class="copyButton" (click)="copyLinkToClipboard(post.link)">Copy Link</button>
     <div *ngIf="post.images?.length" class="post-images">
       <ng-container *ngFor="let image of post.images;">
         <img [src]="getImageUrl(image)" (error)="onImageError($event)" alt="Post Image" class="post-image" />
@@ -41,7 +43,7 @@
       <div *ngFor="let comment of post.comments;" class="comment">
         <ng-container *ngIf="comment">
           <ng-container *ngIf="editingCommentId !== comment.id; else editingComment">
-            <p><strong>User ID {{ comment.userId }}:</strong> {{ comment.content }}</p>
+            <p><strong>{{ comment.author?.username }}:</strong> {{ comment.content }}</p>
             <span>Posted: {{ comment.createdAt | date:'short' }}</span>
             <ng-container *ngIf="comment.userId === currentUserId">
               <button (click)="onStartEditingComment(comment)" class="button-edit">Edit</button>
@@ -72,4 +74,6 @@
       </div>
     </div>
   </div>
+</div>
+</div>
   

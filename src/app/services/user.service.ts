@@ -6,6 +6,7 @@ import { AuthenticatedResponse } from '../models/authenticated-response';
 import { UserRegister } from '../models/user-register';
 import { RegisteredResponse } from '../models/registered-response';
 import { User } from '../models/user';
+import { UpdateConfirmDto } from '../models/dto`s/user/update-confirm';
 
 @Injectable({
   providedIn: 'root'
@@ -26,14 +27,17 @@ export class UserService {
     return this.http.post<RegisteredResponse>(`${this.apiUrl}/register`, userRegister);
   }
 
-  getCurrentUser(): Observable<User>
-  {
+  getCurrentUser(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/current`).pipe(
-      map(user =>({
+      map(user => ({
         ...user,
-      imageUrl: user.imageUrl ? `${this.baseUrl}${user.imageUrl}` : null
-    } as User))
-  );
+        imageUrl: user.imageUrl ? `${this.baseUrl}${user.imageUrl}` : null
+      } as User)),
+      tap(user => {
+        localStorage.setItem('userInfo', JSON.stringify(user));
+        localStorage.setItem('currentUser', JSON.stringify(user));
+      })
+    );
   }
 
   getUser(id: number): Observable<User>
@@ -42,16 +46,24 @@ export class UserService {
   }
   
   updateUser(user: User): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}`, user).pipe(
+    return this.http.put<void>(`${this.apiUrl}`, user);
+  }
+
+  confirmUpdate(updatedUser: UpdateConfirmDto): Observable<string> {
+    return this.http.post(`${this.apiUrl}/confirm-update`, { updatedUser }, { responseType: 'text' }).pipe(
       tap(() => {
-        localStorage.setItem('userInfo', JSON.stringify(user));
       })
     );
   }
+  
 
   getCurrentUserFromLocalStorage(): User | null {
     const user = localStorage.getItem('userInfo');
     return user ? JSON.parse(user) : null;
+  }
+
+  setCurrentUserInLocalStorage(user: User): void {
+  localStorage.setItem('currentUser', JSON.stringify(user));
   }
 
   uploadAvatar(file: File): Observable<string> {

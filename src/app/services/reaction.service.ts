@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Reaction } from '../models/reaction';
 import { Observable } from 'rxjs';
@@ -13,5 +13,13 @@ export class ReactionService {
 
   react(reaction: Reaction): Observable<any>{
     return this.http.post<any>(`${this.apiUrl}/toggle`, reaction);
+  }
+
+  getReactionsForComment(commentId: number, page: number, pageSize: number): Observable<Reaction[]> {
+     const params = new HttpParams()
+          .set('page', page.toString())
+          .set('pageSize', pageSize.toString());
+          
+    return this.http.get<Reaction[]>(`${this.apiUrl}/comment/${commentId}`, { params });
   }
 }

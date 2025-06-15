@@ -1,4 +1,5 @@
 import { Reaction } from "./reaction";
+import { User } from "./user";
 export interface Comment {
     id: number;
     content: string;
@@ -6,4 +7,5 @@ export interface Comment {
     reactions: Reaction[];
     userId: number;
     postId: number;
+    author?: User;
 }

@@ -1,4 +1,5 @@
 import { Reaction } from "../../reaction";
+import { User } from "../../user";
 
 export interface CommentDto{
     id: number;
@@ -7,4 +8,5 @@ export interface CommentDto{
     userId: number;
     postId: number;
     reactions: Reaction[];
+    author?: User;
 }
